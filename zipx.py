@@ -2,9 +2,49 @@ import pyzipper
 import itertools
 import string
 import time
+import webbrowser
+import sys
+import os
+
+# ===============================
+# SUBSCRIPTION GATE
+# ===============================
+
+CHANNEL_URL = "https://www.youtube.com/@neox_neoxa"
+
+def clear_screen():
+    os.system("cls" if os.name == "nt" else "clear")
+
+def subscription_gate():
+    clear_screen()
+    print("=" * 50)
+    print("🔐 ZIP PASSWORD TOOL - ACCESS REQUIRED")
+    print("=" * 50)
+    print("\n📢 To use this tool, please SUBSCRIBE to:")
+    print("👉 https://www.youtube.com/@neox_neoxa\n")
+    print("🌐 Opening YouTube channel now...\n")
+
+    time.sleep(2)
+    webbrowser.open(CHANNEL_URL)
+
+    print("\nAfter subscribing, type YES to continue.")
+    confirm = input("Have you subscribed? (YES/NO): ").strip().lower()
+
+    if confirm != "yes":
+        print("\n❌ Access denied.")
+        print("⚠️ Please subscribe to use this tool.")
+        sys.exit(0)
+
+    print("\n✅ Access granted. Welcome!")
+    time.sleep(1)
+    clear_screen()
+
+# ===============================
+# ZIP BRUTE FORCE FUNCTION
+# ===============================
 
 def try_letters_only(zip_path, min_length, max_length):
-    charset = string.ascii_lowercase  # Nyuguti nto gusa: abcdefghijklmnopqrstuvwxyz
+    charset = string.ascii_lowercase  # a-z only
 
     try:
         zip_file = pyzipper.AESZipFile(zip_path)
@@ -25,30 +65,35 @@ def try_letters_only(zip_path, min_length, max_length):
             print(f"[{count}/{total}] Trying: {password}", end='\r')
 
             try:
-                zip_file.extractall(pwd=password.encode('utf-8'))
-                print(f"\n✅ PASSWORD FOUND: {password}")
+                zip_file.extractall(pwd=password.encode("utf-8"))
+                print(f"\n\n✅ PASSWORD FOUND: {password}")
                 return password
             except:
-                continue
+                pass
 
     print("\n[🔒] Password not found.")
     return None
 
-# === CONFIGURATION ===
-zip_file_path = input("Enter ZIP file path (e.g., cracker.zip): ").strip()
-min_len_input = input("Enter MIN password length (e.g., 1): ").strip()
-max_len_input = input("Enter MAX password length (e.g., 6): ").strip()
+# ===============================
+# MAIN PROGRAM
+# ===============================
 
-# Validate and convert
-if not min_len_input.isdigit() or not max_len_input.isdigit():
-    print("❌ Lengths must be numbers.")
-    exit(1)
+if __name__ == "__main__":
+    subscription_gate()
 
-min_len = int(min_len_input)
-max_len = int(max_len_input)
+    zip_file_path = input("Enter ZIP file path (e.g., secret.zip): ").strip()
+    min_len_input = input("Enter MIN password length (e.g., 1): ").strip()
+    max_len_input = input("Enter MAX password length (e.g., 6): ").strip()
 
-start = time.time()
-try_letters_only(zip_file_path, min_len, max_len)
-end = time.time()
+    if not min_len_input.isdigit() or not max_len_input.isdigit():
+        print("❌ Password lengths must be numbers only.")
+        sys.exit(1)
 
-print(f"\n⏱️ Time taken: {end - start:.2f} seconds\n")
+    min_len = int(min_len_input)
+    max_len = int(max_len_input)
+
+    start = time.time()
+    try_letters_only(zip_file_path, min_len, max_len)
+    end = time.time()
+
+    print(f"\n⏱️ Time taken: {end - start:.2f} seconds\n")
